@@ -6,8 +6,26 @@ import re
 import os
 import asyncio
 from dotenv import load_dotenv
+from threading import Thread
+from flask import Flask
 
+# Carrega variáveis de ambiente (.env para local, Secrets para Replit)
 load_dotenv()
+
+# ==================== SERVIDOR WEB PARA REPLIT ====================
+# Mantém o bot online no Replit
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot está online! 🤖"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -611,11 +629,16 @@ async def help_command(interaction: discord.Interaction):
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 if __name__ == "__main__":
+    # Inicia o servidor web para manter o bot online no Replit
+    keep_alive()
+    
     token = os.getenv('DISCORD_TOKEN')
     if not token:
         print("[ERRO] Token nao encontrado!")
+        print("[INFO] Configure DISCORD_TOKEN nas variáveis de ambiente (Secrets no Replit)")
     else:
         try:
+            print("[INFO] Iniciando bot...")
             bot.run(token)
         except Exception as e:
             print(f"[ERRO] Erro: {e}")

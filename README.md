@@ -67,13 +67,60 @@ Quando todos os 4 votarem, o bot:
 
 ## 🚀 Instalação
 
-### 1. Instalar Dependências
+### 🌐 Opção 1: Replit (Recomendado - Mais Fácil)
+
+Hospedar o bot no Replit é **GRATUITO** e mantém o bot online 24/7!
+
+#### Passo a Passo:
+
+1. **Criar conta no Replit**
+   - Acesse [replit.com](https://replit.com)
+   - Crie uma conta gratuita
+
+2. **Importar o projeto**
+   - Clique em **"+ Create Repl"**
+   - Escolha **"Import from GitHub"**
+   - Cole a URL do seu repositório
+   - Ou faça upload dos arquivos manualmente
+
+3. **Configurar o Token do Discord**
+   - No painel lateral esquerdo, clique no ícone **🔒 Secrets** (ou Tools > Secrets)
+   - Clique em **"New Secret"**
+   - **Key:** `DISCORD_TOKEN`
+   - **Value:** Cole o token do seu bot (veja seção "Configurar no Discord" abaixo)
+   - Clique em **"Add secret"**
+
+4. **Instalar Dependências**
+   - As dependências serão instaladas automaticamente ao clicar em **Run**
+   - Ou execute manualmente no Shell: `pip install -r requirements.txt`
+
+5. **Executar o Bot**
+   - Clique no botão verde **▶ Run**
+   - O bot deve iniciar e ficar online!
+   - Você verá a mensagem: `[OK] NomeDoBot esta online!`
+
+6. **Manter o Bot Online 24/7** (Opcional)
+   - O bot já tem um servidor web integrado rodando na porta 8080
+   - Use um serviço de monitoramento gratuito como [UptimeRobot](https://uptimerobot.com)
+   - Configure para fazer ping na URL do seu Repl a cada 5 minutos
+   - Isso mantém o bot ativo mesmo quando você fechar o navegador
+
+#### ⚠️ Importante no Replit:
+- Não crie arquivo `.env` no Replit - use **Secrets** para variáveis de ambiente
+- O bot reinicia automaticamente se houver erros
+- Logs aparecem no console do Replit
+
+---
+
+### 💻 Opção 2: Instalação Local
+
+#### 1. Instalar Dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configurar Token
+#### 2. Configurar Token
 
 Crie um arquivo `.env` na raiz do projeto:
 
@@ -81,11 +128,13 @@ Crie um arquivo `.env` na raiz do projeto:
 DISCORD_TOKEN=seu_token_aqui
 ```
 
-### 3. Executar Bot
+#### 3. Executar Bot
 
 ```bash
 python bot.py
 ```
+
+---
 
 ### 4. Configurar no Discord
 
