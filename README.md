@@ -2,6 +2,15 @@
 
 Um bot do Discord em Python para gerenciar votações de castigos com **sistema de botões interativos** e **validação automática**.
 
+## 🚀 Quick Start
+
+**Quer colocar o bot no ar AGORA?**
+1. 📖 Leia o **[Guia do Replit](REPLIT.md)** (5 minutos)
+2. ✅ Configure gratuitamente no [Replit](https://replit.com)
+3. 🤖 Seu bot estará online 24/7!
+
+---
+
 ## ✨ Funcionalidades
 
 - ✅ **Botão "📜 Abrir Castigo"** - Interface intuitiva
@@ -71,7 +80,9 @@ Quando todos os 4 votarem, o bot:
 
 Hospedar o bot no Replit é **GRATUITO** e mantém o bot online 24/7!
 
-#### Passo a Passo:
+📖 **[Guia Completo do Replit](REPLIT.md)** - Passo a passo detalhado em português
+
+#### Passo a Passo Rápido:
 
 1. **Criar conta no Replit**
    - Acesse [replit.com](https://replit.com)
