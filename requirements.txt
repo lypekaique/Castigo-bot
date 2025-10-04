@@ -1,0 +1,4 @@
+# Instale com: python -m pip install -r requirements.txt
+# Para Python 3.13, use: python -m pip install git+https://github.com/Rapptz/discord.py
+discord.py>=2.4.0
+python-dotenv==1.0.0
