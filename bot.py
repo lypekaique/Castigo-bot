@@ -81,6 +81,7 @@ class CastigoCreation:
         self.participantes = []
         self.link = None
         self.motivo = None
+        self.last_confirmation_msg = None
 
 # ==================== VIEW COM BOTÃO PARA ABRIR CASTIGO ====================
 
@@ -107,7 +108,7 @@ class AbrirCastigoView(View):
             "💡 Use @ para mencionar (ex: @NomeDoUsuario)\n"
             "⚠️ Clique no nome para ele ficar azul/mencionável\n\n"
             "🗑️ Suas mensagens serão **auto-deletadas**\n"
-            "⏱️ Confirmações aparecem por **5 segundos**",
+            "⏱️ Confirmações somem quando você envia a **próxima mensagem**",
             ephemeral=True
         )
     
@@ -215,26 +216,39 @@ class VotingView(View):
         except:
             pass
         
-        # GIFs diferentes para aprovado/rejeitado
-        gif_url = "https://cdn.discordapp.com/attachments/1074375799878197269/1424153330011213844/caption.gif?ex=68e2e9a5&is=68e19825&hm=c9b7e3c30197d7b4780bea070b3c18f5b5966898ee1157d6d8da4a5d027db9bd&" if result == "APROVADO" else "https://media.tenor.com/gx3jCmdyMR0AAAAC/nope-no.gif"
+        # Se aprovado, adiciona o cargo @castigo
+        if result == "APROVADO":
+            try:
+                guild = self.castigo.trollador.guild
+                cargo_castigo = discord.utils.get(guild.roles, name="castigo")
+                
+                if cargo_castigo:
+                    await self.castigo.trollador.add_roles(cargo_castigo)
+                    print(f"[OK] Cargo @castigo adicionado a {self.castigo.trollador.display_name}")
+                else:
+                    print("[AVISO] Cargo 'castigo' não encontrado no servidor")
+            except Exception as e:
+                print(f"[ERRO] Não foi possível adicionar o cargo: {e}")
         
-        # Define o canal de destino (canal de resultados ou canal atual)
-        target_channel = self.castigo.channel
+        # Envia resultado APENAS no canal de resultados configurado (se houver)
         if RESULTADO_CHANNEL_ID:
             try:
                 target_channel = bot.get_channel(RESULTADO_CHANNEL_ID)
-                if not target_channel:
-                    target_channel = self.castigo.channel
-            except:
-                target_channel = self.castigo.channel
-        
-        await target_channel.send(
-            f"## {emoji} Votação Encerrada!\n"
-            f"{self.castigo.trollador.mention}\n"
-            f"{gif_url}\n\n"
-            f"**Resultado:** {result}\n"
-            f"**Votos:** ✅ {sim_count} x ❌ {nao_count}"
-        )
+                if target_channel:
+                    # GIFs diferentes para aprovado/rejeitado
+                    gif_url = "https://media1.tenor.com/m/F-CfTC0b1bwAAAAd/hammer.gif" if result == "APROVADO" else "https://media.tenor.com/gx3jCmdyMR0AAAAC/nope-no.gif"
+                    
+                    await target_channel.send(
+                        f"## {emoji} Votação Encerrada!\n"
+                        f"{self.castigo.trollador.mention}\n"
+                        f"{gif_url}\n\n"
+                        f"**Resultado:** {result}\n"
+                        f"**Votos:** ✅ {sim_count} x ❌ {nao_count}"
+                    )
+                else:
+                    print("[AVISO] Canal de resultados não encontrado")
+            except Exception as e:
+                print(f"[ERRO] Não foi possível enviar resultado: {e}")
         
         if self.castigo.message.id in active_castigos:
             del active_castigos[self.castigo.message.id]
@@ -274,6 +288,10 @@ async def on_ready():
     print(f'[OK] {bot.user} esta online!')
     print(f'[INFO] Conectado a {len(bot.guilds)} servidor(es)')
     
+    # Registra Views persistentes para que funcionem após reiniciar o bot
+    bot.add_view(AbrirCastigoView())
+    print('[OK] Views persistentes registradas')
+    
     try:
         print('[INFO] Sincronizando comandos slash...')
         synced = await tree.sync()
@@ -295,6 +313,14 @@ async def on_message(message):
         if message.channel.id != creation.channel.id:
             return
         
+        # Deleta a mensagem de confirmação anterior
+        if creation.last_confirmation_msg:
+            try:
+                await creation.last_confirmation_msg.delete()
+                creation.last_confirmation_msg = None
+            except:
+                pass
+        
         # Deleta a mensagem do usuário
         try:
             await message.delete()
@@ -306,70 +332,45 @@ async def on_message(message):
             trollador = extract_user_id(message.content, message.guild)
             
             if not trollador:
-                msg = await message.channel.send(
+                creation.last_confirmation_msg = await message.channel.send(
                     f"{message.author.mention} ❌ Usuário não encontrado!\n"
                     f"💡 Use @ para mencionar o usuário"
                 )
-                await asyncio.sleep(5)
-                try:
-                    await msg.delete()
-                except:
-                    pass
                 return
             
             creation.trollador = trollador
             creation.step = 1
             
-            msg = await message.channel.send(
+            creation.last_confirmation_msg = await message.channel.send(
                 f"{message.author.mention} ✅ Trollador: {trollador.mention}\n"
                 f"📝 **Passo 2 de 4**: Mencione os **4 participantes**"
             )
-            await asyncio.sleep(5)
-            try:
-                await msg.delete()
-            except:
-                pass
         
         # Step 1: Participantes
         elif creation.step == 1:
             participantes = extract_multiple_users(message.content, message.guild)
             
             if len(participantes) != REQUIRED_VOTERS:
-                msg = await message.channel.send(
+                creation.last_confirmation_msg = await message.channel.send(
                     f"{message.author.mention} ❌ Mencione exatamente {REQUIRED_VOTERS} participantes!"
                 )
-                await asyncio.sleep(5)
-                try:
-                    await msg.delete()
-                except:
-                    pass
                 return
             
             if creation.trollador in participantes:
-                msg = await message.channel.send(
+                creation.last_confirmation_msg = await message.channel.send(
                     f"{message.author.mention} ❌ O trollador não pode estar na lista!"
                 )
-                await asyncio.sleep(5)
-                try:
-                    await msg.delete()
-                except:
-                    pass
                 return
             
             creation.participantes = participantes
             creation.step = 2
             
             participantes_text = ", ".join([p.mention for p in participantes])
-            msg = await message.channel.send(
+            creation.last_confirmation_msg = await message.channel.send(
                 f"{message.author.mention} ✅ Participantes: {participantes_text}\n"
                 f"📝 **Passo 3 de 4**: Envie o **link da partida**\n"
                 f"Aceito: op.gg, u.gg ou leagueofgraphs.com"
             )
-            await asyncio.sleep(5)
-            try:
-                await msg.delete()
-            except:
-                pass
         
         # Step 2: Link
         elif creation.step == 2:
@@ -377,14 +378,9 @@ async def on_message(message):
             urls = re.findall(url_pattern, message.content)
             
             if not urls:
-                msg = await message.channel.send(
+                creation.last_confirmation_msg = await message.channel.send(
                     f"{message.author.mention} ❌ Link inválido! Envie uma URL válida."
                 )
-                await asyncio.sleep(5)
-                try:
-                    await msg.delete()
-                except:
-                    pass
                 return
             
             link = urls[0]
@@ -394,55 +390,43 @@ async def on_message(message):
             is_valid = any(domain in link.lower() for domain in allowed_domains)
             
             if not is_valid:
-                msg = await message.channel.send(
+                creation.last_confirmation_msg = await message.channel.send(
                     f"{message.author.mention} ❌ Link inválido!\n"
                     f"Use: **op.gg**, **u.gg** ou **leagueofgraphs.com**"
                 )
-                await asyncio.sleep(5)
-                try:
-                    await msg.delete()
-                except:
-                    pass
                 return
             
             creation.link = link
             creation.step = 3
             
-            msg = await message.channel.send(
+            creation.last_confirmation_msg = await message.channel.send(
                 f"{message.author.mention} ✅ Link validado!\n"
                 f"📝 **Passo 4 de 4**: Escreva o **motivo**"
             )
-            await asyncio.sleep(5)
-            try:
-                await msg.delete()
-            except:
-                pass
         
         # Step 3: Motivo
         elif creation.step == 3:
             if len(message.content) < 10:
-                msg = await message.channel.send(
+                creation.last_confirmation_msg = await message.channel.send(
                     f"{message.author.mention} ❌ Motivo muito curto! (mínimo 10 caracteres)"
                 )
-                await asyncio.sleep(5)
-                try:
-                    await msg.delete()
-                except:
-                    pass
                 return
             
             creation.motivo = message.content
             
-            msg = await message.channel.send(
+            creation.last_confirmation_msg = await message.channel.send(
                 f"{message.author.mention} ✅ Castigo criado! Publicando votação..."
             )
-            await asyncio.sleep(3)
-            try:
-                await msg.delete()
-            except:
-                pass
             
+            # Deleta a mensagem de confirmação final após publicar
             await publish_castigo(creation)
+            
+            if creation.last_confirmation_msg:
+                try:
+                    await creation.last_confirmation_msg.delete()
+                except:
+                    pass
+            
             del active_creations[user_id]
 
 async def publish_castigo(creation):
@@ -514,7 +498,7 @@ async def castigo_info_command(interaction: discord.Interaction):
         name="🔒 Privacidade",
         value=(
             "• Suas mensagens são **auto-deletadas** instantaneamente\n"
-            "• Confirmações aparecem por **5 segundos** e somem\n"
+            "• Confirmações somem quando você envia a **próxima mensagem**\n"
             "• Processo discreto até a votação final\n"
             "• Use o botão **Cancelar** para cancelar"
         ),
@@ -546,7 +530,7 @@ async def castigo_command(interaction: discord.Interaction):
         "💡 Use @ para mencionar (ex: @NomeDoUsuario)\n"
         "⚠️ Clique no nome para ele ficar azul/mencionável\n\n"
         "🗑️ Suas mensagens serão **auto-deletadas**\n"
-        "⏱️ Confirmações aparecem por **5 segundos**",
+        "⏱️ Confirmações somem quando você envia a **próxima mensagem**",
         ephemeral=True
     )
 
@@ -570,6 +554,9 @@ async def configurar_command(
     canal_votacao: discord.TextChannel = None,
     canal_resultado: discord.TextChannel = None
 ):
+    # Defer the response immediately to prevent timeout
+    await interaction.response.defer(ephemeral=True)
+    
     global ALLOWED_CHANNEL_ID, RESULTADO_CHANNEL_ID
     
     response_parts = []
@@ -589,7 +576,7 @@ async def configurar_command(
         response_parts.append("✅ **Canal de resultados:** Mesmo canal da votação")
     
     response = "⚙️ **Configuração atualizada!**\n\n" + "\n".join(response_parts)
-    await interaction.response.send_message(response, ephemeral=True)
+    await interaction.followup.send(response, ephemeral=True)
 
 @tree.command(name="castigo_ajuda", description="Mostra ajuda")
 async def help_command(interaction: discord.Interaction):
