@@ -1,0 +1,21 @@
+# Este arquivo é opcional - Railway faz deploy automático sem GitHub Actions
+# Mantido aqui como referência caso queira customizar o deploy
+
+name: Deploy to Railway
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy info
+        run: |
+          echo "Railway fará o deploy automático deste push"
+          echo "Nenhuma ação necessária aqui"

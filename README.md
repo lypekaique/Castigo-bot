@@ -5,9 +5,12 @@ Um bot do Discord em Python para gerenciar votações de castigos com **sistema 
 ## 🚀 Quick Start
 
 **Quer colocar o bot no ar AGORA?**
-1. 📖 Leia o **[Guia do Replit](REPLIT.md)** (5 minutos)
-2. ✅ Configure gratuitamente no [Replit](https://replit.com)
+
+1. 📖 Leia o **[Guia do Railway](RAILWAY.md)** (5 minutos)
+2. ✅ Faça deploy gratuito no [Railway](https://railway.app)
 3. 🤖 Seu bot estará online 24/7!
+
+💡 **Railway = Melhor opção!** Deploy automático do GitHub, sempre online, sem precisar de truques.
 
 ---
 
@@ -76,50 +79,53 @@ Quando todos os 4 votarem, o bot:
 
 ## 🚀 Instalação
 
-### 🌐 Opção 1: Replit (Recomendado - Mais Fácil)
+### 🚂 Opção 1: Railway (Recomendado - Melhor plataforma!)
 
-Hospedar o bot no Replit é **GRATUITO** e mantém o bot online 24/7!
+Hospedar no Railway é a **melhor opção**: deploy automático do GitHub, sempre online 24/7, sem gambiarras!
 
-📖 **[Guia Completo do Replit](REPLIT.md)** - Passo a passo detalhado em português
+📖 **[Guia Completo do Railway](RAILWAY.md)** - Passo a passo detalhado em português
+
+#### ✨ Por que Railway?
+
+- ✅ **$5 de crédito grátis por mês** (suficiente para o bot)
+- ✅ **Sempre online 24/7** (não precisa de UptimeRobot)
+- ✅ **Deploy automático** - Push no GitHub = Deploy automático
+- ✅ **Logs em tempo real**
+- ✅ **Reinício automático** em caso de erro
+- ✅ **Performance excelente**
 
 #### Passo a Passo Rápido:
 
-1. **Criar conta no Replit**
-   - Acesse [replit.com](https://replit.com)
-   - Crie uma conta gratuita
+1. **Fazer commit do código no GitHub**
 
-2. **Importar o projeto**
-   - Clique em **"+ Create Repl"**
-   - Escolha **"Import from GitHub"**
-   - Cole a URL do seu repositório
-   - Ou faça upload dos arquivos manualmente
+   ```bash
+   git add .
+   git commit -m "Bot de castigos"
+   git push
+   ```
 
-3. **Configurar o Token do Discord**
-   - No painel lateral esquerdo, clique no ícone **🔒 Secrets** (ou Tools > Secrets)
-   - Clique em **"New Secret"**
-   - **Key:** `DISCORD_TOKEN`
-   - **Value:** Cole o token do seu bot (veja seção "Configurar no Discord" abaixo)
-   - Clique em **"Add secret"**
+2. **Criar conta no Railway**
 
-4. **Instalar Dependências**
-   - As dependências serão instaladas automaticamente ao clicar em **Run**
-   - Ou execute manualmente no Shell: `pip install -r requirements.txt`
+   - Acesse [railway.app](https://railway.app)
+   - Faça login com GitHub
 
-5. **Executar o Bot**
-   - Clique no botão verde **▶ Run**
-   - O bot deve iniciar e ficar online!
-   - Você verá a mensagem: `[OK] NomeDoBot esta online!`
+3. **Criar projeto**
 
-6. **Manter o Bot Online 24/7** (Opcional)
-   - O bot já tem um servidor web integrado rodando na porta 8080
-   - Use um serviço de monitoramento gratuito como [UptimeRobot](https://uptimerobot.com)
-   - Configure para fazer ping na URL do seu Repl a cada 5 minutos
-   - Isso mantém o bot ativo mesmo quando você fechar o navegador
+   - Clique em **"New Project"**
+   - Selecione **"Deploy from GitHub repo"**
+   - Escolha seu repositório
 
-#### ⚠️ Importante no Replit:
-- Não crie arquivo `.env` no Replit - use **Secrets** para variáveis de ambiente
-- O bot reinicia automaticamente se houver erros
-- Logs aparecem no console do Replit
+4. **Configurar variável de ambiente**
+
+   - Vá em **Variables**
+   - Adicione: `DISCORD_TOKEN` = seu_token_aqui
+
+5. **Fazer Redeploy**
+   - Vá em **Deployments**
+   - Clique em **"Redeploy"**
+   - Pronto! Bot online! 🎉
+
+📖 **Detalhes completos:** Veja [RAILWAY.md](RAILWAY.md) para instruções detalhadas.
 
 ---
 

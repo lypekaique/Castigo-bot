@@ -38,7 +38,10 @@ wheels/
 .DS_Store
 Thumbs.db
 
-# Replit
+# Railway
+.railway/
+
+# Replit (não usado mais)
 .replit
 .upm/
 .config/
